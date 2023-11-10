@@ -49,12 +49,12 @@ $ sudo update-ca-certificates
 # Run with root user
 $ echo "10.1.1.30 docker-registry.local" >> /etc/hosts
 ```
-1. Restart docker service for changes to take effect and avoid `certificate: x509: certificate signed by unknown authority`
+3. Restart docker service for changes to take effect and avoid `certificate: x509: certificate signed by unknown authority`
 ```sh
 $ system restart docker
 ```
 > It migth be necessary to restart the client machine
-1. Login to registry
+4. Login to registry
 Default credentials are admin/admin in [registry.passwd][6] file
 ```sh
 $ docker login -u admin -p admin https://docker-registry.local
