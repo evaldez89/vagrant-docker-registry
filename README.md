@@ -32,7 +32,7 @@ $ openssl x509 -req -extfile <(printf "subjectAltName=DNS:docker-registry.local,
 ```
 
 # Verify
-Add *rootCA.crt* into trusted certificate authority of any client machine that connects to this Docker registry!
+Add *rootCA.crt* into trusted certificate authority of **any client machine that connects to this** Docker registry!
 Steps are as follows:
 1. Copy certificates into client's machine
 ```sh
@@ -49,7 +49,12 @@ $ sudo update-ca-certificates
 # Run with root user
 $ echo "10.1.1.30 docker-registry.local" >> /etc/hosts
 ```
-3. Login to registry
+1. Restart docker service for changes to take effect and avoid `certificate: x509: certificate signed by unknown authority`
+```sh
+$ system restart docker
+```
+> It migth be necessary to restart the client machine
+1. Login to registry
 Default credentials are admin/admin in [registry.passwd][6] file
 ```sh
 $ docker login -u admin -p admin https://docker-registry.local
