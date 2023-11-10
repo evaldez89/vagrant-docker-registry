@@ -1,20 +1,20 @@
 # Vagrant machine for Private Docker Registry
 >Everything required to create a vagrant machine running your own private docker registry!
->It is running registry and nginx docker containers inside vagrant machine. 
+>It is running registry and nginx docker containers inside vagrant machine.
 
 # Requirements
   - [VirtualBox][1]
   - [Vagrant][2] (1.9.5+)
   - [Docker][5]
 
-# Usage 
+# Usage
 ```sh
 $ git clone git@github.com:mayurs142/vagrant-docker-registry.git
 $ cd vagrant-docker-registry
 $ vagrant up
 ```
 
-# Steps to sign your own certificate
+# MUST DO: Steps to sign your own certificate
 There are a couple of certificates generated and kept in *[registry/files][3]* and *[registry/nginx][4]* directories.
 Below are the steps to generate them:
 ```sh
@@ -22,20 +22,15 @@ Below are the steps to generate them:
 $ openssl genrsa -out rootCA.key 2048
 
 # Generate a root certificate (enter anything at the prompts)
-$ openssl req -x509 -new -nodes -key rootCA.key -days 10000 -out rootCA.crt
+openssl req -x509 -new -days 10000 -key rootCA.key -subj "/C=DO/ST=DN/L=DN/O=Evaldez, Inc./CN=Evaldez Root CA" -out rootCA.crt
 
-# Generate a key for your docker-registry server
-$ openssl genrsa -out docker-registry.key 2048
-
-# Make a certificate signing request 
-# for "Common Name" make sure to type in the domain your server, in this case its docker-registry.local
-# do not enter a challenge password
-$ openssl req -new -key docker-registry.key -out docker-registry.local.csr
+# Make a certificate signing request, in this case its docker-registry.local
+$ openssl req -newkey rsa:2048 -nodes -keyout docker-registry.key -subj "/C=DO/ST=DN/L=DN/O=Evaldez, Inc./CN=*.example.com" -out docker-registry.local.csr
 
 # Sign the certficate
-$ openssl x509 -req -in docker-registry.local.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out docker-registry.crt -days 10000
+$ openssl x509 -req -extfile <(printf "subjectAltName=DNS:docker-registry.local,DNS:docker-registry.local") -in docker-registry.local.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out docker-registry.crt -days 10000
 ```
-    
+
 # Verify
 Add *rootCA.crt* into trusted certificate authority of any client machine that connects to this Docker registry!
 Steps are as follows:
